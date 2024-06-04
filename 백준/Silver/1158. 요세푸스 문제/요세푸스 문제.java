@@ -2,33 +2,31 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(br.readLine());
-    
-        int n = Integer.parseInt(st.nextToken());
-        Queue<Integer> queue = new LinkedList<>(); // 큐 선언
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        List<Integer> list = new LinkedList<>();
+        StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < n; i++) {
-            queue.add(i+1);
+        for (int i = 1; i <= N; i++) {
+            list.add(i);
         }
 
-        int k = Integer.parseInt(st.nextToken());
-
-        while (queue.size() != 1) {
-            for (int i = 0; i < k - 1; i++) {
-                int tmp = queue.poll();
-                queue.offer(tmp);
-            }
-            sb.append(queue.poll()).append(", ");
+        int idx = 0;
+        sb.append("<");
+        while (list.size() > 1) {
+            idx = (idx + K - 1) % list.size();
+            sb.append(list.remove(idx)).append(", ");
         }
-        sb.append(queue.peek()); // 마지막 하나 append
+        sb.append(list.remove(0)).append(">");
 
-        System.out.println("<" + sb + ">");
+        System.out.println(sb);
+
     }
 }
