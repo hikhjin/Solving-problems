@@ -31,9 +31,9 @@ public class Main {
             }
         }
 
-        for (int i = 3; i <= N; i++) { // 구간의 길이
-            for (int j = 1; j <= N - i + 1; j++) { // 시작 인덱스
-                if (arr[j] == arr[i+j-1] && dp[j+1][i+j-2]) { // 처음과 끝이 같고 나머지 안쪽이 펠린드롬일 경우
+        for (int i = 3; i <= N; i++) { // 길이가 3 이상인 경우
+            for (int j = 1; j <= N-i+1; j++) { // 시작 인덱스
+                if (arr[j] == arr[i+j-1] && dp[j+1][i+j-2]) { // 처음과 끝이 같고 안쪽이 펠린드롬일 경우
                     dp[j][i+j-1] = true;
                 }
             }
