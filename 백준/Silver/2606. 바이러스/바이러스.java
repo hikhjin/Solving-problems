@@ -1,43 +1,51 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-
-    static boolean [] visited;
-    static int [][] arr;
-    static int C, N, ans;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        int N = Integer.parseInt(br.readLine()); // 전체 컴퓨터 수
+        int M = Integer.parseInt(br.readLine()); // 연결된 컴퓨터 수
 
-        C = Integer.parseInt(br.readLine()); // 컴퓨터 수
-        N = Integer.parseInt(br.readLine()); // 컴퓨터 쌍의 수
+        Map<Integer, List<Integer>> graph = new HashMap<>();
 
-        visited = new boolean[10001];
-        arr = new int[101][101];
-
-        for (int i = 0; i < N; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            int u = Integer.parseInt(st.nextToken());
-            int v = Integer.parseInt(st.nextToken());
-            arr[u][v] = arr[v][u] = 1;
+        for (int i = 1; i <= N; i++) {
+            graph.put(i, new ArrayList<>());
         }
 
-        DFS(1);
+        for (int i = 1; i <= M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+
+        boolean[] visited = new boolean[N + 1];
+        visited[1] = true; // 1번 컴퓨터
+        int ans = BFS(1, graph, visited);
         System.out.println(ans);
     }
 
-    static void DFS(int v) {
-        visited[v] = true;
-        for (int i = 1; i <= C; i++) {
-            if (!visited[i] && arr[v][i] == 1) {
-                ans += 1;
-                DFS(i);
+    static int BFS(int start, Map<Integer, List<Integer>> graph, boolean[] visited) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
+        int cnt = 0;
+
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+
+            for (int computer : graph.get(cur)) {
+                if (!visited[computer]) {
+                    cnt++;
+                    visited[computer] = true;
+                    queue.offer(computer);
+                }
             }
         }
-
+        return cnt;
     }
-
 }
