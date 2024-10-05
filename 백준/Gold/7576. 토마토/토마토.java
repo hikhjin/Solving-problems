@@ -1,68 +1,66 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
 
 public class Main {
     static int N, M;
-    static int[][] arr;
-    static int[][] dist;
-    static Queue<int[]> q = new LinkedList<>();
-
+    static int[][] map;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-
         M = Integer.parseInt(st.nextToken());
         N = Integer.parseInt(st.nextToken());
+        map = new int[N][M];
+        Queue<int[]> queue = new LinkedList<>(); // 익은 토마토(시작점) 넣을 큐
 
-        arr = new int[N][M];
-        dist = new int[N][M];
-
+        boolean flag = true;
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < M; j++) {
-                arr[i][j] = Integer.parseInt(st.nextToken());
-                if (arr[i][j] == 1) {
-                    q.offer(new int[]{i, j}); // 익은 토마토면 queue에 넣음
-                    dist[i][j] = 0; // 익은 토마토는 거리 0으로 설정
-                } else {
-                    dist[i][j] = -1; // 익지 않은 토마토와 빈 칸을 -1로 초기화
+                map[i][j] = Integer.parseInt(st.nextToken());
+                if (map[i][j] == 1) {
+                    queue.offer(new int[]{i, j});
                 }
+                if (map[i][j] == 0) flag = false;
             }
         }
+        if (flag) { // 모두 익은 토마토일 경우
+            System.out.println(0);
+            return;
+        }
 
-        BFS();
+        bfs(queue);
 
         int max = 0;
-        for (int i = 0; i < N; i++) { // 익지 않은 토마토가 있는지 확인
+        for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
-                if (arr[i][j] == 0 && dist[i][j] == -1) {
+                if (map[i][j] == 0) { // 다 익지 못하는 경우
                     System.out.println(-1);
                     return;
                 }
-                if (dist[i][j] > max) {
-                    max = dist[i][j];
-                }
+                max = Math.max(max, map[i][j]);
             }
         }
-        System.out.println(max);
+        System.out.println(max-1);
     }
 
-    static void BFS() {
-        int[] dx = {1, -1, 0, 0};
-        int[] dy = {0, 0, 1, -1};
+    static void bfs(Queue<int[]> queue) {
+        int[][] dirs = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 
-        while (!q.isEmpty()) {
-            int[] poll = q.poll();
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
 
-            for (int i = 0; i < 4; i++) {
-                int nx = poll[0] + dx[i];
-                int ny = poll[1] + dy[i];
+            for (int[] dir : dirs) {
+                int nx = cur[0] + dir[0];
+                int ny = cur[1] + dir[1];
 
                 if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
-                    if (dist[nx][ny] == -1 && arr[nx][ny] == 0) {
-                        q.offer(new int[]{nx, ny});
-                        dist[nx][ny] = dist[poll[0]][poll[1]] + 1;
-                        arr[nx][ny] = 1; // 토마토를 익힘
+                    if (map[nx][ny] == 0) {
+                        queue.offer(new int[]{nx, ny});
+                        map[nx][ny] = map[cur[0]][cur[1]] + 1;
                     }
                 }
             }
