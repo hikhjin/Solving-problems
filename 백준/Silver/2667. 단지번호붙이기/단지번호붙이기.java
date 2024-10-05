@@ -1,66 +1,70 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class Main {
-    static int [][] map;
-    static int N, tmp;
-    static boolean [][] visited;
-    static int cnt; // 총 단지수
-    static List<Integer> ans = new ArrayList<>(); // 단지 내 집의 수
-
+    static int[][] map;
+    static boolean[][] visited;
+    static int n;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
+        n = Integer.parseInt(br.readLine());
+        map = new int[n][n];
+        visited = new boolean[n][n];
 
-        N = Integer.parseInt(br.readLine()); // 지도 크기
-        map = new int[N][N]; // 지도 배열
-        visited = new boolean[N][N];
-
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < n; i++) {
             String s = br.readLine();
-            for (int j = 0; j < N; j++) {
-                map[i][j] = Character.getNumericValue(s.charAt(j));
+            for (int j = 0; j < n; j++) {
+                map[i][j] = s.charAt(j) - '0';
             }
         }
 
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (!visited[i][j] && map[i][j] == 1) {
-                    cnt += 1;
-                    DFS(i, j);
-                    ans.add(tmp+1);
-                    tmp = 0;
+        List<Integer> list = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (map[i][j] == 1 && !visited[i][j]) {
+                    list.add(bfs(i, j));
                 }
             }
         }
-        System.out.println(cnt);
 
-        ans.sort(Comparator.naturalOrder());
-        for (Integer an : ans) {
-            System.out.println(an);
+        Collections.sort(list);
+        StringBuilder sb = new StringBuilder();
+        sb.append(list.size()).append("\n");
+        for (int num : list) {
+            sb.append(num).append("\n");
         }
+        System.out.println(sb);
     }
 
-    static void DFS(int x, int y) {
-        int [] dx = {0, 0, 1, -1};
-        int [] dy = {1, -1, 0, 0};
+    static int bfs(int x, int y) {
+        Queue<int[]> queue = new LinkedList<>();
+        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+        queue.offer(new int[]{x, y});
         visited[x][y] = true;
+        int cnt = 0;
 
-        for (int i = 0; i < 4; i++) {
-            int xx = x + dx[i];
-            int yy = y + dy[i];
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            cnt++;
 
-            if (xx < N && xx >= 0 && yy < N && yy >= 0) {
-                if (!visited[xx][yy] && map[xx][yy] == 1) {
-                    tmp += 1;
-                    DFS(xx, yy);
+            for (int[] dir : dirs) {
+                int nx = cur[0] + dir[0];
+                int ny = cur[1] + dir[1];
+
+                if (nx >= 0 && nx < n && ny >= 0 && ny < n) {
+                    if (map[nx][ny] == 1 && !visited[nx][ny]) {
+                        queue.offer(new int[]{nx, ny});
+                        visited[nx][ny] = true;
+                    }
                 }
             }
-
         }
+        return cnt;
     }
 }
