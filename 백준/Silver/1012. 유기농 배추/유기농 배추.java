@@ -6,66 +6,66 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
-    static boolean [][] visited;
-    static int [][] arr;
+    static int[][] map, visited;
     static int M, N, K;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        int T = Integer.parseInt(br.readLine());
 
-        int T = Integer.parseInt(br.readLine()); // 테스트 케이스
-
-        for (int i = 0; i < T; i++) {
+        for (int t = 0; t < T; t++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            M = Integer.parseInt(st.nextToken()); // 가로 길이
-            N = Integer.parseInt(st.nextToken()); // 세로 길이
+            M = Integer.parseInt(st.nextToken()); // 가로
+            N = Integer.parseInt(st.nextToken()); // 세로
             K = Integer.parseInt(st.nextToken()); // 배추 개수
 
-            arr = new int[M][N];
-            visited = new boolean[M][N];
-
-            for (int j = 0; j < K; j++) {
+            map = new int[M][N];
+            visited = new int[M][N];
+            int cnt = 0;
+            for (int i = 0; i < K; i++) {
                 st = new StringTokenizer(br.readLine());
                 int x = Integer.parseInt(st.nextToken());
                 int y = Integer.parseInt(st.nextToken());
-                arr[x][y] = 1;
+                map[x][y] = 1;
             }
 
-            int ans = 0;
-
-            for (int k = 0; k < M; k++) {
-                for (int p = 0; p < N; p++) {
-                    if (!visited[k][p] && arr[k][p] == 1) {
-                        ans += 1;
-                        BFS(k, p);
+            for (int i = 0; i < M; i++) {
+                for (int j = 0; j < N; j++) {
+                    if (map[i][j] == 1 && visited[i][j] == 0) {
+                        cnt++;
+                        BFS(i, j);
                     }
                 }
-            } System.out.println(ans);
+            }
+            sb.append(cnt + "\n");
         }
+        System.out.println(sb);
     }
 
     static void BFS(int x, int y) {
-        Queue<int []> q = new LinkedList<>();
-        q.offer(new int[] {x, y});
-        visited[x][y] = true;
+        Queue<int[]> queue = new LinkedList<>();
+        int[] dx = {-1, 0, 1, 0};
+        int[] dy = {0, -1, 0, 1};
 
-        int [] dx = {0, 0, 1, -1};
-        int [] dy = {1, -1, 0, 0}; // 상하좌우 4방향
+        queue.offer(new int[]{x, y});
+        visited[x][y] = 1;
 
-        while (!q.isEmpty()) {
-            int[] poll = q.poll();
+        while (!queue.isEmpty()) {
+            int[] poll = queue.poll();
 
             for (int i = 0; i < 4; i++) {
-                int xx = poll[0] + dx[i];
-                int yy = poll[1] + dy[i];
+                int nx = poll[0] + dx[i];
+                int ny = poll[1] + dy[i];
 
-                if (xx < M && xx >= 0 && yy < N && yy >= 0) {
-                    if (!visited[xx][yy] && arr[xx][yy] == 1) {
-                        q.offer(new int[] {xx, yy});
-                        visited[xx][yy] = true;
+                if (nx >= 0 && nx < M && ny >= 0 && ny < N) {
+                    if (map[nx][ny] == 1 && visited[nx][ny] == 0) {
+                        queue.offer(new int[]{nx, ny});
+                        visited[nx][ny] = 1;
                     }
                 }
             }
         }
+
     }
 }
