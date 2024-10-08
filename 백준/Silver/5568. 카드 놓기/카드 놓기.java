@@ -24,16 +24,14 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         backtrack(0, sb);
 
-        System.out.println(cnt);
+        System.out.println(set.size());
 
     }
 
     public static void backtrack(int idx, StringBuilder sb) {
         if (idx == k) {
-            if (!set.contains(sb.toString())) {
-                set.add(sb.toString());
-                cnt++;
-            }
+            set.add(sb.toString());
+            return;
         }
 
         for (int i = 0; i < n; i++) {
