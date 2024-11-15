@@ -4,21 +4,17 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solution {
+    static Map<Integer, List<Integer>> graph;
     static int max = 0;
-    static int N;
-    static int[][] arr;
-    static boolean[] visited;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
         StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
         int T = Integer.parseInt(br.readLine());
-
         for (int t = 1; t <= T; t++) {
-            sb.append("#").append(t).append(" ");
+            sb.append("#" + t + " ");
             st = new StringTokenizer(br.readLine());
-            N = Integer.parseInt(st.nextToken());
+            int N = Integer.parseInt(st.nextToken());
             int M = Integer.parseInt(st.nextToken());
 
             if (M == 0) {
@@ -26,37 +22,41 @@ public class Solution {
                 if (t != T) sb.append("\n");
                 continue;
             }
+            graph = new HashMap<>();
 
-            arr = new int[N+1][N+1];
-            for (int i = 1; i <= M; i++) {
+            for (int i = 1; i <= N; i++) {
+                graph.put(i, new ArrayList<>());
+            }
+
+            for (int i = 0; i < M; i++) {
                 st = new StringTokenizer(br.readLine());
                 int x = Integer.parseInt(st.nextToken());
                 int y = Integer.parseInt(st.nextToken());
-                arr[x][y] = 1;
-                arr[y][x] = 1;
+                graph.get(x).add(y);
+                graph.get(y).add(x);
             }
 
-            visited = new boolean[N+1];
-            for (int i = 0; i < N; i++) {
+            for (int i = 1; i <= N; i++) {
+                boolean[] visited = new boolean[N+1];
                 visited[i] = true;
-                dfs(i, 1);
-                visited[i] = false;
+                dfs(i, 1, visited);
             }
+
             sb.append(max);
             max = 0;
             if (t != T) sb.append("\n");
         }
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 
-    static void dfs(int i, int cnt) {
-        if (cnt > max) max = cnt;
+    static void dfs(int start, int cnt, boolean[] visited) {
+        max = Math.max(cnt, max);
 
-        for (int j = 1; j <= N; j++) {
-            if (!visited[j] && arr[i][j] == 1) {
-                visited[j] = true;
-                dfs(j, cnt+1);
-                visited[j] = false;
+        for (int n : graph.get(start)) {
+            if (!visited[n]) {
+                visited[n] = true;
+                dfs(n, cnt + 1, visited);
+                visited[n] = false;
             }
         }
     }
