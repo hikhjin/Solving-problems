@@ -4,53 +4,56 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Solution {
-    static int[] prices;
-    static int C;
-    static int max = -9999;
-
+    static String num;
+    static int change;
+    static int[] arr;
+    static int ans = 0;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        StringBuilder sb = new StringBuilder();
         int T = Integer.parseInt(br.readLine());
-
-        for (int i = 1; i <= T; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            String N = st.nextToken();
-            C = Integer.parseInt(st.nextToken());
-            prices = new int[N.length()];
-            if (C > N.length()) C = N.length();
-
-            for (int j = 0; j < N.length(); j++) {
-                prices[j] = N.charAt(j) - '0';
+        for (int t = 1; t <= T; t++) {
+            sb.append("#").append(t).append(" ");
+            st = new StringTokenizer(br.readLine());
+            num = st.nextToken();
+            change = Integer.parseInt(st.nextToken());
+            if (change > num.length()) change = num.length();
+            arr = new int[num.length()];
+            for (int i = 0; i < num.length(); i++) {
+                arr[i] = num.charAt(i) - '0';
             }
 
             dfs(0, 0);
-            System.out.println("#" + i + " " + max);
-            max = 0;
+            sb.append(ans);
+            ans = 0;
+            if (t != T) sb.append("\n");
         }
+        System.out.println(sb);
     }
 
-    static void dfs(int start, int idx) {
-        if (idx == C) {
-            String res = "";
-            for (int i = 0; i < prices.length; i++) {
-                res += prices[i];
+    static void dfs(int start, int cnt) {
+        if (cnt == change) {
+            String tmp = "";
+            for (int i = 0; i < num.length(); i++) {
+                tmp += arr[i];
             }
-            max = Math.max(max, Integer.parseInt(res));
+            ans = Math.max(ans, Integer.parseInt(tmp));
             return;
         }
 
-        for (int i = start; i < prices.length; i++) {
-            for (int j = i + 1; j < prices.length; j++) {
+        for (int i = start; i < arr.length; i++) {
+            for (int j = i + 1; j < arr.length; j++) {
                 swap(i, j);
-                dfs(i, idx + 1);
+                dfs(i, cnt + 1);
                 swap(i, j);
             }
         }
     }
 
     static void swap(int i, int j) {
-        int temp = prices[i];
-        prices[i] = prices[j];
-        prices[j] = temp;
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
     }
 }
