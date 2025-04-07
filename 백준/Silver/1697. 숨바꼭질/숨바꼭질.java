@@ -19,13 +19,13 @@ public class Main {
         } else {
             bfs(N);
         }
-        System.out.println(visited[K]-1);
+        System.out.println(visited[K]);
     }
 
     static void bfs(int now) {
         Queue<Integer> queue = new LinkedList<>();
         queue.add(now);
-        visited[now] = 1;
+        visited[now] = 0;
 
         while (!queue.isEmpty()) {
             int cur = queue.poll();
