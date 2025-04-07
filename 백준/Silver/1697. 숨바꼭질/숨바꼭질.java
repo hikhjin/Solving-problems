@@ -1,54 +1,50 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int K, N;
-    static int visited[] = new int[100001];
+    static int N, K;
+    static int[] visited = new int[100001];
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken()); // 수빈 위치
+        K = Integer.parseInt(st.nextToken()); // 목표 위치
 
-        N = Integer.parseInt(st.nextToken());
-        K = Integer.parseInt(st.nextToken());
-
-        if (N == K) { // N과 K가 같은 위치 일 경우 0초
+        if (N == K) {
             System.out.println(0);
+            return;
         } else {
-            BFS(N);
+            bfs(N);
         }
+        System.out.println(visited[K]-1);
     }
 
-    static void BFS(int n) {
-        Queue<Integer> q = new LinkedList<>();
-        q.offer(n);
-        visited[n] = 1;
+    static void bfs(int now) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(now);
+        visited[now] = 1;
 
-        while(!q.isEmpty()) {
-            int tmp = q.poll();
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
 
-            for (int i = 0; i < 3; i++) {
-                int next;
-                if (i == 0) {
-                    next = tmp + 1;
-                } else if (i == 1) {
-                    next = tmp - 1;
-                } else {
-                    next = tmp * 2;
-                }
+            if (cur == K) {
+                break;
+            }
 
-                if (next == K) {
-                    System.out.println(visited[tmp]);
-                    return;
-                }
-
-                if (next >= 0 && next < visited.length && visited[next] == 0) {
-                    q.offer(next);
-                    visited[next] = visited[tmp] + 1;
-                }
+            if (cur + 1 <= 100000 && visited[cur + 1] == 0) {
+                queue.add(cur + 1);
+                visited[cur + 1] = visited[cur] + 1;
+            }
+            if (cur - 1 >= 0 && visited[cur - 1] == 0) {
+                queue.add(cur - 1);
+                visited[cur - 1] = visited[cur] + 1;
+            }
+            if (cur * 2 <= 100000 && visited[cur * 2] == 0) {
+                queue.add(cur * 2);
+                visited[cur * 2] = visited[cur] + 1;
             }
         }
     }
