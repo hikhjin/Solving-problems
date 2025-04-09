@@ -1,77 +1,70 @@
 import java.util.*;
 
 class Solution {
-    static int[][] arr;
-    static Stack<Integer> stack = new Stack<>();
+    static int[][] map;
     static boolean[][] visited;
-    static int row, col;
+    static int N, M;
+    static Stack<Integer> stack = new Stack<>();
     
     public int[] solution(String[] maps) {
-        row = maps.length;
-        col = maps[0].length();
-        System.out.println("row: " + row + " col: " + col);
-        arr = new int[row][col];
-        visited = new boolean[row][col];
+        N = maps.length;
+        M = maps[0].length();
+        map = new int[N][M];
+        visited = new boolean[N][M];
         
-        for (int i = 0; i < row; i++) { // arr에 지도 정보 저장
+        for (int i = 0; i < N; i++) {
             String s = maps[i];
-            for (int j = 0; j < col; j++) {
+            for (int j = 0; j < M; j++) {
                 if (s.charAt(j) == 'X') {
-                    arr[i][j] = 0;
-                } else {
-                    arr[i][j] = s.charAt(j)-'0';
+                    map[i][j] = 0;
+                } else map[i][j] = s.charAt(j) - '0';
+            }
+        }
+        
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (!visited[i][j] && map[i][j] != 0) {
+                    bfs(i, j);
                 }
             }
         }
         
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col; j++) {
-                if (arr[i][j] != 0 && !visited[i][j]) {
-                    System.out.println(i + " " + j + " " + arr[i][j]);
-                    bfs(i, j);
-                } 
-            }
-        }
+        if (stack.isEmpty()) return new int[]{-1};
         
-        if (stack.isEmpty()) {
-            return new int[]{-1};
-        }
-        
-        int len = stack.size();
-        int[] ans = new int[len];
-        for (int i = 0; i < len; i++) {
+        int[] ans = new int[stack.size()];
+        for (int i = 0; i < ans.length; i++) {
             ans[i] = stack.pop();
         }
         Arrays.sort(ans);
         return ans;
     }
     
-    static void bfs(int x, int y) {
+     static void bfs(int x, int y) {
+        System.out.println("---------------");
+        int cnt = 0;
         Queue<int[]> queue = new LinkedList<>();
         int[][] dirs = {{1,0}, {0,1}, {-1,0}, {0,-1}};
-        
-        int cnt = 0;
-        queue.offer(new int[]{x, y});
         visited[x][y] = true;
+        queue.offer(new int[]{x,y});
         
-        while (!queue.isEmpty()) {
+        while(!queue.isEmpty()) {
             int[] cur = queue.poll();
-            cnt += arr[cur[0]][cur[1]];
-            System.out.println("진입: " + arr[cur[0]][cur[1]]);
+            cnt += map[cur[0]][cur[1]];
+            System.out.println("map:" + map[cur[0]][cur[1]]);
+            System.out.println("cnt: " + cnt);
             
             for (int[] dir : dirs) {
-                int nx = cur[0] + dir[0];
-                int ny = cur[1] + dir[1];
+                int nx = dir[0] + cur[0];
+                int ny = dir[1] + cur[1];
                 
-                if (nx >= 0 && ny >= 0 && nx < row && ny < col) {
-                    if (!visited[nx][ny] && arr[nx][ny] != 0) {
+                if (nx >= 0 && ny >= 0 && nx < N && ny < M) {
+                    if (!visited[nx][ny] && map[nx][ny] != 0) {
                         queue.offer(new int[]{nx, ny});
                         visited[nx][ny] = true;
                     }
                 }
             }
         }
-        System.out.println("최종cnt: " + cnt);
         stack.push(cnt);
     }
 }
