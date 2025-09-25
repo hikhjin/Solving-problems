@@ -6,88 +6,95 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
+    static int N, M;
     static int[][] map;
-    static int[][] copyMap;
-    static int n, m;
-    static int ans = 0;
+    static int maxArea = 0;
+    static int[][] dirs = {{1,0}, {0,1}, {-1,0}, {0,-1}};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
 
-        map = new int[n][m];
-        for (int i = 0; i < n; i++) {
+        map = new int[N][M];
+
+        for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < m; j++) {
+            for (int j = 0; j < M; j++) {
                 map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
+        wall(0);
+        System.out.println(maxArea);
+    }
 
-        walls(0);
-        System.out.println(ans);
+    // map 카피
+    static int[][] copyMap() {
+        int[][] copyMap = new int[N][M];
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                copyMap[i][j] = map[i][j];
+            }
+        }
+        return copyMap;
     }
 
     // 벽 세우기
-    static void walls(int wall) {
-        if (wall == 3) {
-            virus();
+    static void wall(int cnt) {
+        if (cnt == 3) {
+            bfs();
             return;
         }
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
                 if (map[i][j] == 0) {
                     map[i][j] = 1;
-                    walls(wall + 1);
+                    wall(cnt+1);
                     map[i][j] = 0;
                 }
             }
         }
-
     }
 
-    // 바이러스
-    static void virus() {
+    // bfs (바이러스 퍼지기)
+    static void bfs() {
         Queue<int[]> queue = new LinkedList<>();
-        copyMap = new int[n][m]; // 벽이 다 세워질 때마다 virus 실행해야 하므로 초기화 용도
+        int[][] copyMap = copyMap();
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                copyMap[i][j] = map[i][j];
-                if (copyMap[i][j] == 2) { // 바이러스
-                    queue.add(new int[]{i, j});
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (copyMap[i][j] == 2) {
+                    queue.offer(new int[]{i, j});
                 }
             }
         }
 
         while (!queue.isEmpty()) {
-            int[] dx = {-1, 1, 0, 0};
-            int[] dy = {0, 0, -1, 1};
-            int[] poll = queue.poll();
+            int[] cur = queue.poll();
 
-            for (int i = 0; i < 4; i++) {
-                int nx = poll[0] + dx[i];
-                int ny = poll[1] + dy[i];
+            for (int[] dir : dirs) {
+                int nx = cur[0] + dir[0];
+                int ny = cur[1] + dir[1];
 
-                if (nx >= 0 && nx < n && ny >= 0 && ny < m && copyMap[nx][ny] == 0) {
-                    copyMap[nx][ny] = 2;
-                    queue.add(new int[]{nx, ny});
+                if (nx >= 0 && ny >= 0 && nx < N && ny < M) {
+                    if (copyMap[nx][ny] == 0) {
+                        copyMap[nx][ny] = 2;
+                        queue.offer(new int[]{nx, ny});
+                    }
                 }
             }
         }
 
-        int tmp = 0;
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (copyMap[i][j] == 0) {
-                    tmp++;
-                }
+        int area = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (copyMap[i][j] == 0) area++;
             }
         }
-        ans = Math.max(tmp, ans);
+
+        maxArea = Math.max(maxArea, area);
     }
 }
