@@ -1,48 +1,50 @@
 class Solution {
-    int[] answer = new int[2];
-    int[] sales = new int[]{10, 20, 30, 40};
+    static int[] discountRate = new int[]{10,20,30,40};
+    static int[] answer = new int[2];
     
     public int[] solution(int[][] users, int[] emoticons) {
-        dfs(0, users, emoticons, new int[emoticons.length]);
+        dfs(0, new int[emoticons.length], users, emoticons);
         return answer;
     }
-
-    // 모든 할인율 조합 탐색
-    private void dfs(int idx, int[][] users, int[] emoticons, int[] discount) {
+    
+    static void dfs(int idx, int[] discount, int[][] users, int[] emoticons) {
         if (idx == emoticons.length) {
-            calculate(users, emoticons, discount);
+            cal(discount, users, emoticons);
             return;
         }
-
-        for (int rate : sales) {
+        
+        for (int rate : discountRate) {
             discount[idx] = rate;
-            dfs(idx + 1, users, emoticons, discount);
+            dfs(idx + 1, discount, users, emoticons);
         }
     }
-
-    // 현재 할인율 조합으로 가입자수/매출 계산
-    private void calculate(int[][] users, int[] emoticons, int[] discount) {
-        int plusCount = 0;
-        int totalSales = 0;
-
+    
+    static void cal(int[] discount, int[][] users, int[] emoticons) {
+        int cost = 0; // 이모티콘 구매 비용
+        int plusCount = 0; // 이모티콘 플러스 가입자 수
+        
         for (int[] user : users) {
-            int needRate = user[0];
-            int maxPrice = user[1];
-            int cost = 0;
-
+            int maxPrice = user[1]; // 최대 가격
+            int minRate = user[0]; // 최소 비율
+            int userCost = 0; // 사용자별 이모티콘 구매 비용
+            
             for (int i = 0; i < emoticons.length; i++) {
-                if (discount[i] >= needRate) {
-                    cost += emoticons[i] * (100 - discount[i]) / 100;
+                if (minRate <= discount[i]) {
+                    int paid = emoticons[i] * (100 - discount[i]) / 100;
+                    userCost += paid;
                 }
             }
-
-            if (cost >= maxPrice) plusCount++;
-            else totalSales += cost;
+            
+            if (userCost >= maxPrice) {
+                plusCount++;
+            } else {
+                cost += userCost;
+            }
         }
-
-        if (plusCount > answer[0] || (plusCount == answer[0] && totalSales > answer[1])) {
+        
+        if (answer[0] < plusCount || (answer[0] == plusCount) && (answer[1] < cost)) {
             answer[0] = plusCount;
-            answer[1] = totalSales;
+            answer[1] = cost;
         }
     }
 }
