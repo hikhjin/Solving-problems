@@ -17,20 +17,13 @@ public class Main {
 
         for (int i = 1; i < n; i++) {
             int now = Integer.parseInt(st.nextToken());
-            if (now < stack.peek()[0]) {
-                sb.append(stack.peek()[1]).append(" ");
-            } else {
-                while (now >= stack.peek()[0]) {
-                    stack.pop();
-                    if (stack.isEmpty()) {
-                        sb.append(0).append(" ");
-                        break;
-                    }
-                }
-                if (!stack.isEmpty()) {
-                    sb.append(stack.peek()[1]).append(" ");
-                }
+
+            while (!stack.isEmpty() && stack.peek()[0] < now) {
+                stack.pop();
             }
+
+            if (stack.isEmpty()) sb.append(0).append(" ");
+            else sb.append(stack.peek()[1]).append(" ");
             stack.push(new int[]{now, i+1});
         }
 
