@@ -1,0 +1,43 @@
+import java.io.*;
+import java.util.*;
+class Main {
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int N = Integer.parseInt(br.readLine());
+		int[] arr = new int[N+1]; // 현재 숫자
+		int[] max = new int[N+1]; //  최대 숫자
+
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		for (int i = 1; i <= N; i++) {
+			max[i] = Integer.parseInt(st.nextToken());
+		}
+
+		st = new StringTokenizer(br.readLine());
+		for (int i = 1; i <= N; i++) {
+			arr[i] = Integer.parseInt(st.nextToken());
+		}
+
+		int K = Integer.parseInt(br.readLine()); // 누르는 횟수
+
+		for (int i = 0; i < K; i++) {
+			arr[N]++;
+
+			for (int j = N; j >= 1; j--) {
+				if (arr[j] > max[j]) {
+					arr[j] = 0;
+
+					if (j > 1) {
+						arr[j-1]++;
+					} else break;
+				}
+			}
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (int i = 1; i <= N; i++) {
+			sb.append(arr[i]);
+		}
+
+		System.out.print(sb);
+	}
+}
